@@ -166,7 +166,7 @@ def replacer(origin, text, index, length=None):
 def txt_find_node_start(line):
   output = [0]
   for x,i in enumerate(line):
-    if i == ' ':
+    if i == '_':
       output.append(x+1)
   # optional segment to output the the location in the middle of various node names
   # last = None
@@ -191,12 +191,12 @@ def print_xp_tree(Root, gui_mode = False):
     level_dict[i.level].append(i)
   # print(level_dict)
   for level, nodes in level_dict.items():
-    line = ' '.join([i.name for i in nodes])+' '
+    line = '_'.join([i.name for i in nodes])+'_'
     # print(level, line)
-    output.append(' '.join([str(level),line]))
+    output.append('_'.join([str(level),line]))
     for j in range(0, len(nodes)+1):
       i_locations = txt_find_node_start(line)
-      string_list = [' ' for i in range(i_locations[-1]+1)]
+      string_list = ['_' for i in range(i_locations[-1]+1)]
       string_list = ''.join(string_list)
       j = j-1 #extends or reduces up-down line length
       for i,l in enumerate(i_locations):
