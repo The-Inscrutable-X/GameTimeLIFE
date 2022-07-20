@@ -5,7 +5,8 @@ try:
     import cPickle as pickle
 except ModuleNotFoundError:
     import pickle
-  
+
+#template function for the 'Find' function in the General XP (GXP) Class
 def recursive_find(target, origin):
   if origin.name == target:
     return origin
@@ -16,7 +17,8 @@ def recursive_find(target, origin):
       continue
     else:
       return result
-      
+
+#Enables the hierarchical and 'forward propagating' tree format that experience points are stored in
 class GXP():
   def __init__(self, name, xp, parent=None):
     self.name = name
@@ -24,19 +26,20 @@ class GXP():
     self.cached_xp = xp
     self.boys = []
     self.parent = parent
-    self.level = (lambda x: x.level+1 if x != None else 0)(self.parent)
+    self.level = (lambda x: x.level+1 if x != None else 0)(self.parent) #finds which hierarchical level the node/leaf is on upon creation by counting parents/earlier nodes
     print('initiated node at level:', self.level, ', name:',self.name)
-    #self.linear_update()
 
+  # returns a list of all nodes in the tree 'cumulative boys'
   def __getitem__(self, index):
     return self.get_cum_boys(self)[index]
 
   def __del__(self): 
-    print('node', self.name, 'worth', self.cached_xp,'destroyed')
+    print('node', self.name, 'worth', self.xp,'destroyed')
     self.cached_xp = 0
     self.linear_update()
     print()
-    
+
+  #obsolete function previously ensuring proper deletion of node and its child nodes
   def delete(self):
     for i in self.parent.boys:
       if i.name == self.name:
@@ -45,7 +48,8 @@ class GXP():
     # self.linear_update()
     # self.parent = None
     # print('running')
-  
+
+  #finds a particular node by name
   def find(self, target):
     if self.name == target:
       return self
@@ -57,7 +61,7 @@ class GXP():
       else:
         return result
     
-  # def get_cum_boys(self, origin, cum_boys = []):
+  #obtain references to all nodes in tree 
   def get_cum_boys(self, origin): #the origin argument is an appendix and has no function
     cum_boys = [self]
     for i in self.boys:
@@ -84,7 +88,7 @@ class GXP():
     #   return cum_boys
     # return cum_results
     
-  #returns sorted cum_boys
+  #returns sorted cumulative_boys
   def sorted(self, key=lambda x: x.name):
     return sorted(self.get_cum_boys(self), key=key)
     
@@ -93,7 +97,7 @@ class GXP():
     self.xp = new_xp
     self.linear_update()
 
-  # creates a child of the current node. This also returns the child so you can call the method again to create a child of the child you just created.
+  # creates a child of the current node. This also returns the child so you can call the method again to create a child of the child you just created. Allows multiple nodes to be created simultaneously
   def insert(self, *nodes):
     for name, data in nodes:
       # print('test',weakref.ref(self)())
@@ -116,7 +120,8 @@ class GXP():
     if insure == True:
       self.get_stacked_xp()
     return self.cached_xp
-    
+
+  #recalculates all cached xp above current node(towards the root)
   def linear_update(self):
     try:
       if self.parent == None:
@@ -132,6 +137,13 @@ class GXP():
     self.parent.linear_update()
     # print('linear updated')
 
+  #changes experience of current node without replacing it, can add negative numbers
+  def add_experience(self, xp):
+    self.xp += xp
+    self.cached_xp += xp
+    self.linear_update()
+
+  #save tree to json file for future retrieval
   def save(self):
     with open('tree_storage.json', 'w') as file:
       tree = {}

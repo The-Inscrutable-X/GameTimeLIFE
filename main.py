@@ -18,7 +18,6 @@ print('examine1', Root.get_cached_xp())
 print(print_xp_tree(Root))
 
 
-
 sg.theme('Light Green 6')
 layout = [
   [sg.Text('Create An Event', key='text')],
@@ -35,7 +34,8 @@ while True:
   event, values = window.read()
   if event == 'End' or event == sg.WIN_CLOSED:
     break
-
+  if state == "events list":
+    pass
   if state == 'create_event':
     if event == 'Ok':
       # print(values['Event_Name'], values['Event_Category'], values["Event_XP"])
