@@ -25,28 +25,32 @@ layout = [
   [sg.Text('Event_Name'), sg.InputText(key="Event_Name")],
   [sg.Text('Event_Category'), sg.InputText(key="Event_Category")],
   [sg.Text('Event_XP'), sg.InputText(key="Event_XP")],
+  [sg.Text('Task or Node Y/N'), sg.InputText(key="TorN")],
   [sg.Button('Ok')]
 ]
 window = sg.Window('GameTimeBasicGui', layout=layout, finalize=True)
 
-state = 'create_event'
+polish = {} #stores all "tasks" that could result in events
+state = 'create_node'
 while True:
   event, values = window.read()
   if event == 'End' or event == sg.WIN_CLOSED:
     break
   if state == "events list":
     pass
-  if state == 'create_event':
+  if state == 'create_node':
     if event == 'Ok':
-      # print(values['Event_Name'], values['Event_Category'], values["Event_XP"])
+      print(values['Event_Name'], values['Event_Category'], values["Event_XP"])
       try:
         name =  values['Event_Name']
         parent =  values['Event_Category']
         xp = int(values["Event_XP"]) 
-        Root.find(parent).insert((name,xp))
+        TorN = values["TorN"].lower()
+        
+        Root.find(parent).insert((name,xp,TorN)) #for when the task is fullfilled
         window['tree_text'].update(print_xp_tree(Root))
         Root.save()
-      except Exception as e:
+      except Exception as e: #handel invalid entries
         print('Invalid entries inputted')
         event = 'End'
         print('Exception is: {}'.format(e))

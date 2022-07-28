@@ -20,12 +20,13 @@ def recursive_find(target, origin):
 
 #Enables the hierarchical and 'forward propagating' tree format that experience points are stored in
 class GXP():
-  def __init__(self, name, xp, parent=None):
+  def __init__(self, name, xp, parent=None, isTask=False):
     self.name = name
     self.xp = xp
     self.cached_xp = xp
     self.boys = []
     self.parent = parent
+    self.isTask = isTask
     self.level = (lambda x: x.level+1 if x != None else 0)(self.parent) #finds which hierarchical level the node/leaf is on upon creation by counting parents/earlier nodes
     print('initiated node at level:', self.level, ', name:',self.name)
 
@@ -99,9 +100,9 @@ class GXP():
 
   # creates a child of the current node. This also returns the child so you can call the method again to create a child of the child you just created. Allows multiple nodes to be created simultaneously
   def insert(self, *nodes):
-    for name, data in nodes:
+    for name, data, TorN in nodes:
       # print('test',weakref.ref(self)())
-      self.boys.append(GXP(name, data, weakref.proxy(self)))
+      self.boys.append(GXP(name, data, weakref.proxy(self), isTask=TorN))
       boy = self.boys[-1]
       boy.linear_update()
     self.boys.sort(key = lambda x: x.name)
@@ -154,7 +155,7 @@ class GXP():
       json.dump(tree,file)
 
 
-#retrieve root
+#retrieve tree from json file
 def load_json_tree():
   with open('tree_storage.json','r') as json_tree:
     tree = json.load(json_tree)
@@ -200,7 +201,7 @@ def print_xp_tree(Root, gui_mode = False):
   for i in Root.get_cum_boys(Root):
     level_dict[i.level] = []
   for i in Root.get_cum_boys(Root):
-    level_dict[i.level].append(i)
+    level_dict[i.level].append(i) #appends nodes into print format, must exclude tasks from this level dict
   # print(level_dict)
   for level, nodes in level_dict.items():
     line = '_'.join([i.name for i in nodes])+'_'
