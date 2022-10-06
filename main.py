@@ -50,6 +50,7 @@ while True:
         Root.find(parent).insert((name,xp,TorN)) #for when the task is fullfilled
         window['tree_text'].update(print_xp_tree(Root))
         Root.save()
+        
       except Exception as e: #handel invalid entries
         print('Invalid entries inputted')
         event = 'End'
